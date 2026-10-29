@@ -107,6 +107,7 @@ export function activate(context: vscode.ExtensionContext): CccApi {
   const usage = new UsageService();
   const dashboard = new DashboardProvider(agents, usage, context, () => ({ staleAfterMs: cfg().staleAfterMs }), timelines);
   let acc: ReturnType<typeof registerAccounts> | undefined = undefined; // set once accounts register (end of activate)
+  agentsWeb.currentSession = () => dashboard.sessionId();
   const shell: ShellProvider = new ShellProvider(context, dashboard, agentsWeb, () => agents.snapshot.activeCount);
   shell.checkpoints.register(context);
   context.subscriptions.push(hooks.onEvents((evs) => shell.checkpoints.onEvents(evs)));
@@ -268,7 +269,7 @@ export function activate(context: vscode.ExtensionContext): CccApi {
       { label: '$(diff) Claude Changes', cmd: CARD_COMMANDS.changes },
       { label: '$(rocket) Delegate task…', cmd: CARD_COMMANDS.delegate },
       { label: '$(refresh) Refresh limits', cmd: CARD_COMMANDS.refresh },
-      { label: '$(gear) Settings', cmd: CARD_COMMANDS.settings, args: ['@ext:pfxtoolkit.claude-code-control-center'] },
+      { label: '$(gear) Settings', cmd: CARD_COMMANDS.settings, args: ['@ext:artflow-studio.claude-code-control-center'] },
       agents.isPaused ? { label: '$(debug-start) Resume monitoring', cmd: CARD_COMMANDS.resume } : { label: '$(debug-pause) Pause monitoring', cmd: CARD_COMMANDS.pause }
     ];
     const pick = await vscode.window.showQuickPick(items, { placeHolder: 'Claude Code' });

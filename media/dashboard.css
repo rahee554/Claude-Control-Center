@@ -266,3 +266,5 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   .crow .tag.sess { display: none; }
   .crow .chip { font-size: 0; padding: 0; width: 8px; height: 8px; line-height: 8px; border-radius: 50%; background: currentColor; border: 0; }
 }
+.adot { display: inline-block; width: 7px; height: 7px; margin-right: 6px; border-radius: 50%; vertical-align: middle; background: var(--vscode-testing-iconFailed, var(--vscode-charts-red)); }
+.adot.in { background: var(--vscode-testing-iconPassed, var(--vscode-charts-green)); }

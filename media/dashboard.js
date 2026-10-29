@@ -309,7 +309,7 @@
     m.addEventListener('keydown', (ev) => { if (ev.key === 'Escape') { pop = undefined; render(); } });
     return m;
   }
-  function accItem(id, label, sub, on) {
+  function accItem(id, label, sub, on, loggedIn) {
     {
       const b = el('button', 'mi' + (on ? ' on' : ''));
       b.type = 'button';
@@ -317,7 +317,10 @@
       b.setAttribute('aria-checked', String(!!on));
       b.appendChild(on ? icon('check') : el('span', 'ico'));
       const tx = el('span', 'mi-t');
-      tx.appendChild(el('span', '', label));
+      const nm = el('span', '');
+      if (loggedIn !== undefined) { const d = el('span', 'adot' + (loggedIn ? ' in' : '')); d.title = loggedIn ? 'Logged in' : 'Signed out'; nm.appendChild(d); }
+      nm.appendChild(document.createTextNode(label));
+      tx.appendChild(nm);
       if (sub) tx.appendChild(el('span', 'mi-s', sub));
       b.appendChild(tx);
       b.addEventListener('click', () => { pop = undefined; send({ type: 'setAccount', id }); });
@@ -330,7 +333,7 @@
     m.appendChild(item(undefined, 'Auto', 'Sub-account with the lowest 5h usage', !acc.defaultId));
     acc.list.filter((a) => a.enabled).forEach((a) => {
       const lim = [a.fiveHour !== undefined ? '5h ' + Math.round(a.fiveHour) + '%' : '', a.weekly !== undefined ? 'wk ' + Math.round(a.weekly) + '%' : ''].filter(Boolean).join(' · ');
-      m.appendChild(item(a.id, a.label, [a.role, a.plan, a.loggedIn ? lim : 'signed out'].filter(Boolean).join(' · '), a.id === acc.defaultId));
+      m.appendChild(item(a.id, a.label, [a.role, a.plan, a.loggedIn ? lim : 'signed out'].filter(Boolean).join(' · '), a.id === acc.defaultId, !!a.loggedIn));
     });
     m.appendChild(el('div', 'sep'));
     const act = (ic, label, id) => { const b = el('button', 'mi'); b.type = 'button'; b.setAttribute('role', 'menuitem'); b.appendChild(icon(ic)); b.appendChild(el('span', 'mi-t', label)); b.addEventListener('click', () => { pop = undefined; render(); send({ type: 'command', id }); }); return b; };
@@ -704,7 +707,7 @@
     list.appendChild(accItem(undefined, 'Auto', 'Sub-account with the lowest 5h usage', !acc.defaultId));
     acc.list.forEach((a) => {
       const lim = [a.fiveHour !== undefined ? '5h ' + Math.round(a.fiveHour) + '%' : '', a.weekly !== undefined ? 'wk ' + Math.round(a.weekly) + '%' : ''].filter(Boolean).join(' · ');
-      list.appendChild(accItem(a.id, a.label, [a.role, a.plan, a.enabled ? '' : 'disabled', a.loggedIn ? lim : 'signed out'].filter(Boolean).join(' · '), a.id === acc.defaultId));
+      list.appendChild(accItem(a.id, a.label, [a.role, a.plan, a.enabled ? '' : 'disabled', a.loggedIn ? lim : 'signed out'].filter(Boolean).join(' · '), a.id === acc.defaultId, !!a.loggedIn));
     });
     root.appendChild(list);
     const del = Array.isArray(state.delegated) ? state.delegated : [];

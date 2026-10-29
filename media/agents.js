@@ -1,6 +1,7 @@
 (function () {
   const saved = window.CCC_STORE.get('agents');
   let mode = saved.mode === 'tree' ? 'tree' : 'map'; // Map is the default until the user picks Tree
+  let scope = saved.scope === 'all' ? 'all' : 'session'; // this session's agents by default; 'all' = every project
   let postFn = () => undefined;
   let sel, detail, lastReq = 0;
   const openMore = new Set();
@@ -8,7 +9,7 @@
   let st = null;
   let app = document.createElement('div');
   const SVG = 'http://www.w3.org/2000/svg';
-  const save = () => window.CCC_STORE.set('agents', { mode, collapsed: [...collapsed] });
+  const save = () => window.CCC_STORE.set('agents', { mode, scope, collapsed: [...collapsed] });
 
   function el(tag, cls, text, ns) {
     const e = ns ? document.createElementNS(SVG, tag) : document.createElement(tag);
@@ -37,12 +38,20 @@
   };
 
   function header() {
-    const bar = el('div', 'abar');
+    const bar = el('div', 'abar'), views = el('div', 'seg'), scopes = el('div', 'seg');
+    bar.append(views, scopes);
     for (const m of ['tree', 'map']) {
       const b = el('button', '', m === 'tree' ? 'Tree' : 'Map');
       b.setAttribute('aria-pressed', String(mode === m));
       b.onclick = () => { mode = m; save(); draw(); };
-      bar.appendChild(b);
+      views.appendChild(b);
+    }
+    for (const s of ['session', 'all']) {
+      const b = el('button', '', s === 'session' ? 'This session' : 'All agents');
+      b.setAttribute('aria-pressed', String(scope === s));
+      b.title = s === 'session' ? 'Agents of the session shown in Activity' : 'Agents running across all projects';
+      b.onclick = () => { scope = s; save(); draw(); };
+      scopes.appendChild(b);
     }
     return bar;
   }
@@ -133,12 +142,18 @@
   }
 
   function draw() {
-    const s0 = scroller(), top = s0.scrollTop;
+    const s0 = scroller(), top = s0.scrollTop, p0 = app.querySelector('.apane'), ptop = p0 ? p0.scrollTop : 0;
     app.replaceChildren(header());
+    // With a drawer open the tab splits into three independently scrolling panes: agents / transcript / files.
+    app.classList.toggle('asplit', !!sel);
     if (!st) return;
-    (mode === 'map' ? drawMap : drawTree)(app);
+    const full = st, pane = el('div', 'apane');
+    app.appendChild(pane);
+    if (scope === 'session') st = { ...full, nodes: full.nodes.filter((n) => n.sessionId === full.current), layout: full.layoutCurrent || full.layout };
+    try { (mode === 'map' ? drawMap : drawTree)(pane); } finally { st = full; }
+    pane.scrollTop = ptop;
     drawDrawer(app);
-    s0.scrollTop = top;
+    scroller().scrollTop = top;
   }
 
   function dur(ms) {
@@ -181,9 +196,11 @@
     return frag;
   }
 
-  const expanded = new Set(), fullOut = new Set(), kept = new Set();
-  let following = true, showAll = false, intent = 0, durEl = null, icons = {};
+  const expanded = new Map(), fullOut = new Set(), kept = new Set();
+  let following = true, showAll = false, lastKey = '', intent = 0, durEl = null, icons = {};
   function scroller() {
+    const mid = app.querySelector('.dmid');
+    if (mid) return mid;
     for (let p = app.parentElement; p; p = p.parentElement) { const o = getComputedStyle(p).overflowY; if ((o === 'auto' || o === 'scroll') && p.scrollHeight > p.clientHeight) return p; }
     return document.scrollingElement || document.documentElement;
   }
@@ -203,8 +220,10 @@
     }, true);
   }
 
-  function toolRow(t, i, running) {
+  function toolRow(t, i, running, last) {
     const key = t.id || 'i' + i;
+    // Only the latest call is open by default; older ones fold as new calls arrive unless the user toggled them.
+    const isOpen = expanded.has(key) ? expanded.get(key) : last;
     const wrap = el('div', 'tcall s-' + t.status);
     const r = el('button', 'trow s-' + t.status);
     r.type = 'button';
@@ -212,14 +231,14 @@
     const sp = t.status === 'run' && running ? el('span', 'ts spin') : el('span', 'ts', t.status === 'ok' ? '✓' : t.status === 'err' ? '✗' : '…');
     r.append(el('span', 'tn', t.name), el('span', 'tt', t.target || ''), t.ms !== undefined ? el('span', 'meta', dur(t.ms)) : el('span'), sp);
     r.title = (t.input || t.target || t.name).slice(0, 400);
-    r.setAttribute('aria-expanded', String(expanded.has(key)));
+    r.setAttribute('aria-expanded', String(isOpen));
     r.onclick = () => {
       if (!can) return;
-      expanded.has(key) ? expanded.delete(key) : expanded.add(key);
+      expanded.set(key, !isOpen);
       renderDrawer();
     };
     wrap.appendChild(r);
-    if (can && expanded.has(key)) {
+    if (can && isOpen) {
       const body = el('div', 'tbody');
       if (t.input) { body.appendChild(el('div', 'io', 'IN')); body.appendChild(el('pre', 'code', t.input)); }
       if (t.out !== undefined) {
@@ -257,7 +276,7 @@
   }
 
   function buildDrawer() {
-    const box = el('div', 'drawer');
+    let box = el('div', 'drawer');
     box.setAttribute('aria-label', 'Agent details');
     durEl = null;
     let d = detail && detail.id === sel.id && detail.sessionId === sel.sessionId ? detail : undefined;
@@ -283,6 +302,9 @@
     chips.appendChild(link);
     head.appendChild(chips);
     box.append(close, head);
+    const outer = box, mid = el('div', 'dmid');
+    box.appendChild(mid);
+    box = mid;
     if (d.promptHead) {
       box.appendChild(section('Prompt'));
       box.appendChild(el('pre', 'txt', d.promptHead));
@@ -291,6 +313,8 @@
     if (d.tools.length) {
       box.appendChild(section('Tool calls', String(d.tools.length)));
       const l = el('div', 'tlist');
+      const lt = d.tools[d.tools.length - 1], lk = lt.id || 'i' + (d.tools.length - 1);
+      if (lk !== lastKey) { lastKey = lk; expanded.clear(); } // a new call arrived: fold everything older
       const skip = showAll ? 0 : Math.max(0, d.tools.length - 40);
       if (skip) {
         const b = el('button', 'dlink', 'Show ' + skip + ' earlier');
@@ -298,7 +322,7 @@
         b.onclick = () => { showAll = true; renderDrawer(); };
         l.appendChild(b);
       }
-      d.tools.forEach((t, i) => { if (i >= skip) l.appendChild(toolRow(t, i, running)); });
+      d.tools.forEach((t, i) => { if (i >= skip) l.appendChild(toolRow(t, i, running, i === d.tools.length - 1)); });
       box.appendChild(l);
     }
     if (d.result) {
@@ -314,16 +338,18 @@
         box.appendChild(b);
       }
     }
-    const files = d.files.filter((f) => !kept.has(d.id + '|' + f.path));
-    if (files.length) {
-      box.appendChild(section('Files changed', String(files.length)));
-      files.forEach((f) => box.appendChild(fileRow(f)));
-    }
     const pill = el('button', 'newpill', '↓ New activity');
     pill.type = 'button'; pill.hidden = following;
     pill.onclick = () => { following = true; toBottom(); pill.hidden = true; };
-    box.appendChild(pill);
-    return box;
+    mid.appendChild(pill);
+    const files = d.files.filter((f) => !kept.has(d.id + '|' + f.path));
+    if (files.length) {
+      const fbox = el('div', 'dfiles');
+      fbox.appendChild(section('Files changed', String(files.length)));
+      files.forEach((f) => fbox.appendChild(fileRow(f)));
+      outer.appendChild(fbox);
+    }
+    return outer;
   }
 
   /** Replaces only the drawer (keeps scroll; follows the newest item while running unless the user scrolled up). */
@@ -331,9 +357,10 @@
     const old = app.querySelector('.drawer');
     if (!sel) return;
     listen();
-    const s = scroller(), top = s.scrollTop, box = buildDrawer();
+    const top = scroller().scrollTop, f0 = app.querySelector('.dfiles'), ftop = f0 ? f0.scrollTop : 0, box = buildDrawer();
     if (old) old.replaceWith(box); else app.appendChild(box);
-    if (stick && following) toBottom(); else s.scrollTop = top;
+    const f1 = box.querySelector('.dfiles'); if (f1) f1.scrollTop = ftop;
+    if (stick && following) toBottom(); else scroller().scrollTop = top;
   }
   function drawDrawer() { if (sel) { listen(); app.appendChild(buildDrawer()); } }
   setInterval(() => { if (durEl && durEl.dataset.live && durEl.isConnected) durEl.textContent = dur(Date.now() - Number(durEl.dataset.since)); }, 1000);

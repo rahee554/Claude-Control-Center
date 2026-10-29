@@ -42,6 +42,8 @@ export class AgentsViewProvider {
   private cur?: { sessionId: string; agentId: string; file: string; tail: SubTail; watcher?: fs.FSWatcher; timer?: NodeJS.Timeout };
   /** Posts a message to the Agents tab (set by the shell). */
   post: (msg: unknown) => void = () => undefined;
+  /** Session the Agents tab scopes to by default (the Activity tab's session; set by extension wiring). */
+  currentSession: () => string | undefined = () => undefined;
 
   constructor(private readonly agents: AgentService, private readonly timelines?: Timelines) {}
 
@@ -138,7 +140,9 @@ export class AgentsViewProvider {
 
   state() {
     const nodes = this.nodes();
-    return { nodes, layout: layoutMap(nodes.filter((n) => n.kind !== 'recent')), now: Date.now() };
+    const current = this.currentSession();
+    const live = nodes.filter((n) => n.kind !== 'recent');
+    return { nodes, current, layout: layoutMap(live), layoutCurrent: layoutMap(live.filter((n) => n.sessionId === current)), now: Date.now() };
   }
 
   private wire(a: AgentInfo, kind: WireNode['kind'], parent?: string): WireNode {

@@ -81,6 +81,6 @@ export function buildCard(i: CardInput): string {
   const out: string[] = [`**$(ccc-claude) Claude Code${plan}**`, '', ...limitBlock('5h', i.fiveHour, i.now), ...limitBlock('Weekly', i.sevenDay, i.now)];
   out.push(i.context ? `Context · ${Math.round(i.context.pct)}%  ` : 'Context · _Unavailable_  ');
   out.push(`$(sync) ${i.active} active agent${i.active === 1 ? '' : 's'}`, '');
-  out.push(`_${[link('Open panel', CARD_COMMANDS.activity), link('Refresh', CARD_COMMANDS.refresh), link('Settings', CARD_COMMANDS.settings, ['@ext:pfxtoolkit.claude-code-control-center'])].join(' · ')}_`);
+  out.push(`_${[link('Open panel', CARD_COMMANDS.activity), link('Refresh', CARD_COMMANDS.refresh), link('Settings', CARD_COMMANDS.settings, ['@ext:artflow-studio.claude-code-control-center'])].join(' · ')}_`);
   return out.join('\n');
 }

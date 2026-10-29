@@ -126,7 +126,7 @@ export class DashboardProvider {
   /** Number of changed files shown in the Changes tab (badge). */
   changeCount(): number { return this.groups().reduce((n, g) => n + g.changes.length, 0); }
 
-  private sessionId(): string | undefined {
+  sessionId(): string | undefined {
     const s = this.agents.snapshot.sessions;
     if (this.selected && (s.some((x) => x.id === this.selected) || this.agents.getTranscriptStats(this.selected) || this.transcriptOf(this.selected))) return this.selected;
     return [...s].sort((a, b) => b.lastActivity - a.lastActivity)[0]?.id;
@@ -444,7 +444,7 @@ export class DashboardProvider {
       if (m.type === 'revertTurn') { await this.revertTurn(m.sessionId, m.line, m.path); this.tlKey = undefined; this.rerender(true); return; }
       if (m.type === 'command') { await vscode.commands.executeCommand(m.id); return; }
       if (m.type === 'exportSession') { await this.exportSession(); return; }
-      if (m.type === 'openSettings') { await vscode.commands.executeCommand('workbench.action.openSettings', '@ext:pfxtoolkit.claude-code-control-center'); return; }
+      if (m.type === 'openSettings') { await vscode.commands.executeCommand('workbench.action.openSettings', '@ext:artflow-studio.claude-code-control-center'); return; }
       if (m.type === 'setAccount') { await vscode.commands.executeCommand('ccc.accounts.setDefault', m.id); this.rerender(true); return; }
       if (m.type === 'toggle') { await this.setToggle(m.key, m.on); this.rerender(true); return; }
       if (m.type === 'bulk') { await this.bulk(m.op, m.items); this.rerender(true); return; }

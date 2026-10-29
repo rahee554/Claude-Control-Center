@@ -20,6 +20,7 @@ const ACCOUNTS_DIR = path.join(CCC_HOME, 'accounts');
 const TASKS_DIR = path.join(CCC_HOME, 'tasks');
 const OWNER_TAG = 'claude-control-center';
 const DEFAULT_KEY = 'ccc.accounts.default';
+const RECOVERED_KEY = 'ccc.accounts.recovered.v1';
 const PENDING_LABEL = 'New account (logging in…)';
 const BIN_DIR = path.join(CCC_HOME, 'bin');
 const MCP_NAME = 'ccc-accounts';
@@ -85,10 +86,20 @@ export function registerAccounts(context: vscode.ExtensionContext, _api: CccApi)
 
   let accounts: Account[] = context.globalState.get<Account[]>(KEY) ?? [];
   if (!accounts.length) accounts = [{ id: 'main', label: 'Main', role: 'main', enabled: true, color: COLORS[0] }];
+  // One-off: re-add sub-account config dirs a stale window dropped from the list (before reload() existed).
+  if (!context.globalState.get<boolean>(RECOVERED_KEY)) {
+    let dirs: string[] = [];
+    try { dirs = fs.readdirSync(ACCOUNTS_DIR).filter((d) => /^[a-z0-9]{6,40}$/.test(d) && fs.existsSync(path.join(ACCOUNTS_DIR, d, '.claude.json'))); } catch { /* none */ }
+    for (const id of dirs) if (!accounts.some((a) => a.id === id)) accounts.push({ id, label: PENDING_LABEL, role: 'sub', configDir: path.join(ACCOUNTS_DIR, id), enabled: true, color: COLORS[accounts.length % COLORS.length] });
+    void context.globalState.update(KEY, accounts).then(() => context.globalState.update(RECOVERED_KEY, true));
+  }
+  /** Every window holds its own copy; re-read the shared list before acting so a stale window can't overwrite another's edits. */
+  const reload = () => { const g = context.globalState.get<Account[]>(KEY); if (g?.length) accounts = g; };
   let defaultId = context.globalState.get<string>(DEFAULT_KEY);
   const dcfg = () => vscode.workspace.getConfiguration('ccc.delegate');
   // accounts.json for the MCP server (hooks/ccc-mcp.js): labels/status/workspaces only, no secrets.
   const writeAccountsFile = () => {
+    reload();
     try {
       const data = accountsFile(accounts, status, {
         exe: claudeExe(), workspaces: (vscode.workspace.workspaceFolders ?? []).map((f) => f.uri.fsPath), defaultAccountId: defaultId,
@@ -181,7 +192,7 @@ export function registerAccounts(context: vscode.ExtensionContext, _api: CccApi)
   const refreshAccount = async (a: Account) => {
     const exe = claudeExe();
     const s: AccountStatus = { ...status.get(a.id), ...(exe ? await authStatus(exe, a) : { loggedIn: undefined }), ts: Date.now() };
-    if (s.loggedIn && s.email && a.label === PENDING_LABEL) { a.label = s.email; await context.globalState.update(KEY, accounts); }
+    if (s.loggedIn && s.email && a.label === PENDING_LABEL) { reload(); const cur = accounts.find((x) => x.id === a.id); if (cur) { cur.label = s.email; await context.globalState.update(KEY, accounts); } }
     if (s.loggedIn && a.enabled) {
       const u = await runUsageCli(claudePath(), 60_000, accountEnv(a));
       if (u) { s.fiveHour = u.fiveHour?.usedPercentage; s.weekly = u.sevenDay?.usedPercentage; s.fiveHourResets = u.fiveHour?.resetsText; s.weeklyResets = u.sevenDay?.resetsText; }
@@ -192,6 +203,7 @@ export function registerAccounts(context: vscode.ExtensionContext, _api: CccApi)
   const pollAll = async () => {
     if (polling || !enabled()) return;
     polling = true;
+    reload();
     try { for (const a of [...accounts]) { await refreshAccount(a); await new Promise((r) => setTimeout(r, 3000)); } } finally { polling = false; }
   };
   let pollTimer: NodeJS.Timeout | undefined;
@@ -205,7 +217,7 @@ export function registerAccounts(context: vscode.ExtensionContext, _api: CccApi)
   // ---- helpers ----
   const accountOf = async (arg: unknown, placeHolder: string, filter: (a: Account) => boolean = () => true): Promise<Account | undefined> => {
     const n = arg as Node | undefined;
-    if (n && n.kind === 'account') return n.a;
+    if (n && n.kind === 'account') return accounts.find((x) => x.id === n.a.id) ?? n.a;
     const pick = await vscode.window.showQuickPick(accounts.filter(filter).map((a) => ({ label: a.label, description: a.role.toUpperCase(), a })), { placeHolder });
     return pick?.a;
   };
@@ -313,6 +325,7 @@ export function registerAccounts(context: vscode.ExtensionContext, _api: CccApi)
 
   // ---- commands ----
   const reg = (id: string, fn: (...args: unknown[]) => unknown) => context.subscriptions.push(vscode.commands.registerCommand(id, async (...args: unknown[]) => {
+    reload();
     try { await fn(...args); } catch (e) { void vscode.window.showErrorMessage(`Claude Control Center: ${e instanceof Error ? e.message : 'command failed'}`); }
   }));
 

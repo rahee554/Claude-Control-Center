@@ -114,11 +114,13 @@ async function tree($: EngineInterface, e: RenderInput<'AbovePrompt' | 'Pane'>, 
         const canRestore = typeof f.original === 'string'
         return (
           <Box key={f.path} gap={1} paddingLeft={2}>
-            {Svg ? <Svg source={ICONS[id]} alt={id} width={14} height={14} /> : <Text dimColor>·</Text>}
-            <Text>{shortName(base(f.path))}</Text>
-            {dir && <Text dimColor>{dir}</Text>}
-            {!canRestore && <Text dimColor>new</Text>}
-            <Box flexGrow={1} />
+            {/* Name side shrinks and truncates on one line so the stats/buttons never wrap under it. */}
+            <Box flexGrow={1} flexShrink={1} minWidth={0} gap={1}>
+              {Svg ? <Svg source={ICONS[id]} alt={id} width={14} height={14} /> : <Text dimColor>·</Text>}
+              <Text wrap="truncate-end">{shortName(base(f.path))}</Text>
+              {dir && <Box flexShrink={1} minWidth={0}><Text dimColor wrap="truncate-end">{dir}</Text></Box>}
+              {!canRestore && <Text dimColor>new</Text>}
+            </Box>
             <Box flexShrink={0} gap={1}>
               <Text color="green">+{f.added}</Text>
               <Text color="red">-{f.removed}</Text>

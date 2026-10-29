@@ -1,7 +1,10 @@
 /* Scoped to the Agents tab so it can't clash with dashboard.css (.row, .dot, .empty ...). */
-[data-tab="agents"] .abar { display: flex; gap: 2px; padding: 4px 8px; }
-[data-tab="agents"] .abar button { background: none; border: 1px solid transparent; color: inherit; padding: 2px 10px; cursor: pointer; border-radius: 3px; }
-[data-tab="agents"] .abar button[aria-pressed="true"] { background: var(--vscode-button-secondaryBackground); border-color: var(--vscode-focusBorder); }
+[data-tab="agents"] .abar { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; padding: 6px 8px; }
+[data-tab="agents"] .seg { display: inline-flex; border: 1px solid var(--vscode-widget-border, rgba(128,128,128,.35)); border-radius: 4px; overflow: hidden; }
+[data-tab="agents"] .abar button { background: none; border: 0; color: inherit; padding: 3px 12px; font: inherit; font-size: 12px; cursor: pointer; opacity: .75; }
+[data-tab="agents"] .abar button + button { border-left: 1px solid var(--vscode-widget-border, rgba(128,128,128,.35)); }
+[data-tab="agents"] .abar button:hover { opacity: 1; background: var(--vscode-toolbar-hoverBackground); }
+[data-tab="agents"] .abar button[aria-pressed="true"] { opacity: 1; background: var(--vscode-button-secondaryBackground); color: var(--vscode-button-secondaryForeground, inherit); }
 [data-tab="agents"] .abar button:focus-visible { outline: 1px solid var(--vscode-focusBorder); }
 [data-tab="agents"] .empty { padding: 8px 12px; opacity: .7; text-align: left; }
 [data-tab="agents"] .row { display: flex; align-items: center; gap: 6px; padding: 2px 8px; cursor: pointer; white-space: nowrap; overflow: hidden; }
@@ -76,3 +79,11 @@
 @media (prefers-reduced-motion: reduce) { [data-tab="agents"] .spin { animation: none; } }
 [data-tab="agents"] .newpill { position: sticky; bottom: 6px; display: block; margin: 6px auto 0; padding: 2px 10px; border-radius: 10px; border: 0; cursor: pointer; background: var(--vscode-button-background); color: var(--vscode-button-foreground); font-size: 11px; }
 [data-tab="agents"] .newpill[hidden] { display: none; }
+/* Split layout while a drawer is open: agents / transcript (auto-follows) / files, each scrolls on its own. */
+[data-tab="agents"].asplit { display: flex; flex-direction: column; height: calc(100vh - var(--tabh)); overflow: hidden; }
+[data-tab="agents"].asplit .abar { flex: none; }
+[data-tab="agents"].asplit .apane { flex: 0 1 auto; max-height: 30%; min-height: 60px; overflow: auto; }
+[data-tab="agents"].asplit .drawer { flex: 1 1 0; min-height: 0; display: flex; flex-direction: column; }
+[data-tab="agents"].asplit .dhead { flex: none; }
+[data-tab="agents"].asplit .dmid { flex: 1 1 0; min-height: 80px; overflow: auto; }
+[data-tab="agents"].asplit .dfiles { flex: 0 1 auto; max-height: 30%; overflow: auto; border-top: 1px solid var(--vscode-panel-border, rgba(128,128,128,.3)); margin-top: 4px; }

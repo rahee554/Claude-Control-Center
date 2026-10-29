@@ -8,7 +8,7 @@ export function run(): Promise<void> {
   mocha.suite.emit('pre-require', globalThis, 'smoke', mocha);
   describe('smoke', () => {
     it('activates and manages an owned terminal', async () => {
-      const ext = vscode.extensions.getExtension<CccApi>('pfxtoolkit.claude-code-control-center');
+      const ext = vscode.extensions.getExtension<CccApi>('artflow-studio.claude-code-control-center');
       assert.ok(ext, 'extension present');
       const api = await ext.activate();
       assert.ok(api.agents && api.terminals && api.usage);
