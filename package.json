@@ -4,6 +4,7 @@
   "description": "Monitor Claude Code agents, subagents and their terminals from one sidebar.",
   "version": "0.1.0",
   "publisher": "pfxtoolkit",
+  "icon": "media/icon.png",
   "license": "MIT",
   "repository": {
     "type": "git",

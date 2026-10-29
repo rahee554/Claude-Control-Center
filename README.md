@@ -4,12 +4,20 @@ A VS Code sidebar, status bar item and chat-box mod that monitor your [Claude Co
 
 > **Unofficial.** This project is an independent companion to Anthropic's `anthropic.claude-code` extension. It is **not affiliated with, endorsed by, or sponsored by Anthropic**. It never patches the official extension. "Claude" and "Claude Code" are trademarks of Anthropic.
 
-<!-- TODO: add screenshots in docs/images/ -->
+## Screenshots
+
 | | |
 |---|---|
-| ![Activity tab](docs/images/activity.png) | ![Changes tab](docs/images/changes.png) |
-| ![Agents map](docs/images/agents-map.png) | ![Accounts and delegation](docs/images/accounts.png) |
-| ![Status bar card](docs/images/status-card.png) | ![Chat-box mod](docs/images/mod-band.png) |
+| ![Activity: live agents, limits, models, messages](docs/images/activity.png) | ![Changes: files Claude edited, with Keep / Undo](docs/images/changes.png) |
+| Activity: live agents, limits, models, messages | Changes: files Claude edited, with Keep / Undo |
+| ![Agents: workflow map of agents and subagents](docs/images/agents-map.png) | ![Checkpoints: workspace snapshots independent of git](docs/images/checkpoints.png) |
+| Agents: workflow map of agents and subagents | Checkpoints: workspace snapshots independent of git |
+| ![Settings page](docs/images/settings.png) | ![Status bar hover card](docs/images/status-card.png) |
+| Settings page | Status bar hover card |
+| ![Chat-box band (illustration)](docs/images/chat-band.png) | |
+| Chat-box band (illustration) | |
+
+*Mock data; regenerate with `node scripts/screenshots/capture.js`.*
 
 ## Features
 
@@ -26,6 +34,29 @@ One sidebar webview ("Control Center") with six tabs: Activity, Changes, Agents,
 - **Terminal mirror**: each session gets a read-only terminal showing the Bash/PowerShell commands Claude ran and their output. Closing a mirror never stops Claude or a command.
 - **Attention alerts**: notifications when Claude needs permission or input, or a delegated task finishes.
 - **Session export**: "Export Session as Markdown".
+
+## Save tokens & work smartly
+
+- **Delegate light standalone tasks** to a sub-account (`ccc.delegate.routing.light` / `.heavy`; MCP `delegate_task` takes `weight`). Light work defaults to Haiku (`ccc.delegate.routing.lightModel`), heavy to Opus; `auto` picks the account with the lowest 5h usage.
+- **Pass `contextFiles` instead of pasting** file contents into a delegated task, and use `resumeTaskId` to continue a previous task instead of re-explaining it.
+- **Use Plan mode and the `readonly` preset** (`ccc.delegate.defaultPreset`) for exploration; escalate to `edit`/`bash` only when needed.
+- **Keep subagent prompts self-contained**: goal, files, constraints, expected output. Subagents don't see your conversation.
+- **Watch context %, 5h and weekly usage** in the status bar and Activity metrics; start fresh or delegate before you hit a limit.
+- **Checkpoints instead of re-explaining**: snapshot before a risky step (`ccc.checkpoints.autoOnPrompt`) and restore rather than describing the old state.
+- **Hooks are light**: they only append small JSON lines. Cap mirror output with `ccc.mirror.maxOutputKB`, or turn off `ccc.mirror.showOutput` to store less.
+- **Poll less**: raise or zero `ccc.limits.pollMinutes` and `ccc.accounts.pollMinutes` (each poll runs `claude -p /usage`).
+- **Privacy**: set `ccc.timeline.showText` to `false` to hide prompt and reply text in the timeline.
+- **Don't babysit**: attention alerts (`ccc.alerts.*`) notify you on permission prompts, input waits and finished tasks.
+
+## Skills
+
+Bundled with the mod plugin (`mod/skills`):
+
+- `ccc-accounts`: list and manage Claude accounts and their status.
+- `ccc-delegate`: hand a standalone task to a sub-account.
+- `ccc-checkpoint`: create or restore a workspace checkpoint.
+- `ccc-usage`: show context, 5h and weekly usage.
+- `ccc-session-report`: summarize a session (prompts, tools, files changed).
 
 ## Requirements
 

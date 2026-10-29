@@ -4,6 +4,12 @@ All notable changes to this project are documented here. Format: [Keep a Changel
 
 ## [Unreleased]
 
+### Added
+- Marketplace icon (`media/icon.png`); README "Save tokens & work smartly" and "Skills" sections.
+
+### Changed
+- Removed missing screenshot embeds and the contact email placeholder; reporting is via GitHub issues and private security advisories.
+
 ## [0.1.0]
 
 ### Added

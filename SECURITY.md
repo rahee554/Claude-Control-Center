@@ -6,7 +6,7 @@ Only the latest release receives security fixes.
 
 ## Reporting a vulnerability
 
-Please do not open a public issue. Use GitHub's private "Report a vulnerability" (Security tab) for this repository, or email CONTACT_EMAIL. Include the version, steps to reproduce and impact. Expect an acknowledgement within a few days.
+Please do not open a public issue. Use GitHub private vulnerability reporting: https://github.com/rahee554/Claude-Control-Center/security/advisories/new Include the version, steps to reproduce and impact. Expect an acknowledgement within a few days.
 
 ## Scope and model
 

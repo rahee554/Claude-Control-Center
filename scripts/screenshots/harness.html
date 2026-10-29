@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<!-- Screenshot harness: loads the REAL media/ webview assets with a stub VS Code API and mock data. Not shipped. -->
+<html lang="en"><head><meta charset="utf-8">
+<style>
+:root{--vscode-font-family:'Segoe UI',sans-serif;--vscode-font-size:13px;--vscode-editor-font-family:Consolas,monospace;--vscode-foreground:#cccccc;--vscode-descriptionForeground:#9d9d9d;
+--vscode-sideBar-background:#181818;--vscode-editor-background:#1f1f1f;--vscode-panel-border:#2b2b2b;--vscode-widget-border:#313131;--vscode-focusBorder:#0078d4;
+--vscode-button-background:#0078d4;--vscode-button-foreground:#ffffff;--vscode-button-hoverBackground:#026ec1;--vscode-button-secondaryBackground:#313131;--vscode-button-secondaryForeground:#cccccc;--vscode-button-secondaryHoverBackground:#3c3c3c;
+--vscode-input-background:#313131;--vscode-input-foreground:#cccccc;--vscode-input-border:#3c3c3c;--vscode-input-placeholderForeground:#989898;
+--vscode-list-hoverBackground:#2a2d2e;--vscode-list-activeSelectionBackground:#04395e;--vscode-list-activeSelectionForeground:#ffffff;--vscode-toolbar-hoverBackground:#383a49;
+--vscode-badge-background:#616161;--vscode-badge-foreground:#ffffff;--vscode-textLink-foreground:#4daafc;--vscode-textLink-activeForeground:#4daafc;
+--vscode-editorWidget-background:#202020;--vscode-editorWidget-border:#313131;--vscode-menu-background:#1f1f1f;--vscode-menu-foreground:#cccccc;--vscode-dropdown-background:#313131;--vscode-dropdown-border:#3c3c3c;
+--vscode-charts-red:#f14c4c;--vscode-charts-orange:#d18616;--vscode-charts-yellow:#cca700;--vscode-charts-green:#89d185;--vscode-charts-blue:#3794ff;--vscode-charts-purple:#b180d7;--vscode-charts-foreground:#cccccc;
+--vscode-errorForeground:#f85149;--vscode-editorError-foreground:#f14c4c;--vscode-editorWarning-foreground:#cca700;--vscode-editorInfo-foreground:#3794ff;
+--vscode-gitDecoration-addedResourceForeground:#81b88b;--vscode-gitDecoration-deletedResourceForeground:#c74e39;--vscode-gitDecoration-modifiedResourceForeground:#e2c08d;--vscode-testing-iconPassed:#73c991;--vscode-testing-iconFailed:#f14c4c;
+--vscode-progressBar-background:#0e70c0;--vscode-scrollbarSlider-background:#79797966;--vscode-textBlockQuote-background:#2b2b2b;--vscode-textCodeBlock-background:#2b2b2b;--vscode-disabledForeground:#6e7681;--vscode-icon-foreground:#cccccc}
+body{margin:0;background:var(--vscode-sideBar-background);color:var(--vscode-foreground);font-family:var(--vscode-font-family);font-size:var(--vscode-font-size)}
+</style>
+<link rel="stylesheet" href="../../media/shell.css"><link rel="stylesheet" href="../../media/dashboard.css"><link rel="stylesheet" href="../../media/agents.css"><link rel="stylesheet" href="../../media/checkpoints.css">
+</head><body><div id="tabs" role="tablist"></div><div id="root"></div>
+<script>
+// Stub of the VS Code webview API.
+window.acquireVsCodeApi = () => ({ getState: () => undefined, setState: () => undefined, postMessage: () => undefined });
+</script>
+<script src=".gen/gen.js"></script><script src="mock.js"></script>
+<script src="../../media/shell.js"></script><script src="../../media/dashboard.js"></script><script src="../../media/agents.js"></script><script src="../../media/checkpoints.js"></script>
+<script>
+const q = new URLSearchParams(location.search), tab = q.get('tab') || 'activity';
+document.body.style.width = (q.get('w') || 420) + 'px';
+setTimeout(() => {
+  const post = (m) => window.postMessage(m, '*');
+  post({ tab: 'shell', type: 'init', active: tab, badges: window.MOCK.badges });
+  post({ tab, type: 'state', state: window.MOCK[tab] });
+  setTimeout(() => { const h = document.querySelector('.turn-h'); if (h && tab === 'activity') h.click(); }, 100);
+}, 100);
+</script></body></html>

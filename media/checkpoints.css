@@ -6,7 +6,7 @@
 .ckp .item { border: 1px solid var(--vscode-widget-border, rgba(128,128,128,.25)); border-radius: 3px; margin: 6px 0; padding: 6px; }
 .ckp .name { font-weight: 600; word-break: break-word; }
 .ckp .meta { opacity: .75; margin-top: 2px; }
-.ckp .badge { display: inline-block; padding: 0 5px; border-radius: 8px; font-size: 10px; background: var(--vscode-badge-background); color: var(--vscode-badge-foreground); margin-right: 4px; }
+.ckp .badge { position: static; display: inline-block; width: auto; height: auto; opacity: 1; place-items: normal; vertical-align: 1px; line-height: 15px; padding: 0 5px; border-radius: 8px; font-size: 10px; background: var(--vscode-badge-background); color: var(--vscode-badge-foreground); margin-right: 4px; }
 .ckp .file { display: flex; align-items: center; gap: 4px; margin: 2px 0; }
 .ckp .file .p { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .ckp .k-added { color: var(--vscode-gitDecoration-addedResourceForeground, #81b88b); }

@@ -25,3 +25,4 @@ desktop.ini
 # Env & secrets
 .env
 .env.*
+scripts/screenshots/.gen/

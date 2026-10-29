@@ -12,3 +12,5 @@ esbuild.mjs
 eslint.config.mjs
 .gitignore
 mod/**
+scripts/**
+docs/images/**
