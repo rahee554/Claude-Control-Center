@@ -1,6 +1,9 @@
 {
   "name": "ccc-local",
-  "owner": { "name": "pfxtoolkit" },
+  "owner": {
+    "name": "Raheel Ahmad (Artflow Studio)",
+    "url": "https://artflow.pk"
+  },
   "plugins": [
     {
       "name": "control-center",

@@ -1,7 +1,10 @@
 {
   "name": "control-center",
   "version": "0.1.0",
-  "author": { "name": "pfxtoolkit" },
+  "author": {
+    "name": "Raheel Ahmad",
+    "url": "https://artflow.pk"
+  },
   "description": "Claude Code Control Center: Copilot-style changed-files band and usage widgets above the prompt.",
   "types": "./types/index.d.ts"
 }

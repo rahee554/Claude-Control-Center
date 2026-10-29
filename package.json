@@ -894,5 +894,9 @@
   "galleryBanner": {
     "color": "#1e1e1e",
     "theme": "dark"
+  },
+  "author": {
+    "name": "Raheel Ahmad",
+    "url": "https://artflow.pk"
   }
 }
