@@ -254,14 +254,15 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 .crow:hover .badges, .crow:focus-within .badges { opacity: 1; }
 
 /* Changes rows: fixed grid columns flush right */
-.crow { display: grid; grid-template-columns: 16px minmax(0, 1fr) 9ch 11ch auto 68px; column-gap: 6px; padding: 0 8px 0 12px; }
+.crow { position: relative; display: grid; grid-template-columns: 16px minmax(0, 1fr) 9ch 11ch auto; column-gap: 6px; padding: 0 8px 0 12px; }
 .crow .chip { justify-self: start; overflow: hidden; white-space: nowrap; }
 .crow .tag.sess { margin: 0; white-space: nowrap; text-align: right; }
 .crow .counts { justify-self: end; }
-.crow .badges { justify-self: end; }
+.crow .badges { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: var(--vscode-list-hoverBackground, var(--hover)); border-radius: 3px; box-shadow: -8px 0 8px var(--vscode-list-hoverBackground, var(--hover)); pointer-events: none; }
+.crow:hover .badges, .crow:focus-within .badges { pointer-events: auto; }
 .cchips { padding-right: 8px; }
 @media (max-width: 340px) {
-  .crow { grid-template-columns: 16px minmax(0, 1fr) 10px auto 68px; }
+  .crow { grid-template-columns: 16px minmax(0, 1fr) 10px auto; }
   .crow .tag.sess { display: none; }
   .crow .chip { font-size: 0; padding: 0; width: 8px; height: 8px; line-height: 8px; border-radius: 50%; background: currentColor; border: 0; }
 }
