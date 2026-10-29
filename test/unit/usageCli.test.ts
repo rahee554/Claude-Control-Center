@@ -1,4 +1,7 @@
 import * as assert from 'assert';
+import * as fs from 'fs';
+import * as os from 'os';
+import * as path from 'path';
 import { parseReset, parseUsageOutput, runUsageCli } from '../../src/services/usageCli';
 
 const SAMPLE = `You are currently using your subscription to power your Claude Code usage
@@ -26,5 +29,15 @@ describe('usage CLI parser', () => {
   });
   it('rejects a claude path with shell metacharacters', async () => {
     assert.strictEqual(await runUsageCli('claude & calc'), undefined);
+  });
+  it('accepts Windows 8.3 short paths containing ~ (e.g. C:\\Users\\RUNNER~1)', async function () {
+    if (process.platform !== 'win32') this.skip();
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'RUN~1-'));
+    fs.writeFileSync(path.join(dir, 'fake.js'), "console.log('Current session: 12% used · resets Oct 29, 4pm')");
+    fs.writeFileSync(path.join(dir, 'fake.cmd'), `@node "${path.join(dir, 'fake.js')}"\r\n`);
+    try {
+      const u = await runUsageCli(path.join(dir, 'fake.cmd'), 15000);
+      assert.strictEqual(u?.fiveHour?.usedPercentage, 12);
+    } finally { fs.rmSync(dir, { recursive: true, force: true }); }
   });
 });

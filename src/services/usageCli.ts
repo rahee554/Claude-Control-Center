@@ -43,7 +43,8 @@ export function parseUsageOutput(out: string, now = Date.now()): CliUsage | unde
 
 /** Runs `claude -p /usage` with fixed arguments (no user/untrusted input reaches the command line). */
 export function runUsageCli(claudePath = 'claude', timeoutMs = 30_000, env?: Record<string, string>): Promise<CliUsage | undefined> {
-  if (!/^[\w .:\\/()-]+$/.test(claudePath) || /["&|<>^%]/.test(claudePath)) return Promise.resolve(undefined);
+  // `~` appears in Windows 8.3 short paths (C:\Users\RUNNER~1\...) and is inert for cmd.exe.
+  if (!/^[\w .:\\/()~-]+$/.test(claudePath) || /["&|<>^%]/.test(claudePath)) return Promise.resolve(undefined);
   const win = process.platform === 'win32';
   // .cmd shims need cmd.exe on Windows; arguments are constants.
   const [file, args] = win ? ['cmd.exe', ['/d', '/s', '/c', claudePath, '-p', '/usage', '--no-session-persistence']] : [claudePath, ['-p', '/usage', '--no-session-persistence']];
