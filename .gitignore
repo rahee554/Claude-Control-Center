@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+out/
+*.vsix
+*.tsbuildinfo
+
+# VS Code test downloads
+.vscode-test/
+
+# Local Claude Code settings (personal, not shared)
+.claude/settings.local.json
+
+# Logs & OS / editor junk
+*.log
+npm-debug.log*
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+.idea/
+
+# Env & secrets
+.env
+.env.*

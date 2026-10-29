@@ -1,0 +1,13 @@
+{
+  "hooks": {
+    "SessionStart": [{ "hooks": [{ "type": "command", "command": "node \"C:/path/to/extension/hooks/ccc-hook.js\"", "timeout": 10 }] }],
+    "SessionEnd": [{ "hooks": [{ "type": "command", "command": "node \"C:/path/to/extension/hooks/ccc-hook.js\"", "timeout": 10 }] }],
+    "UserPromptSubmit": [{ "hooks": [{ "type": "command", "command": "node \"C:/path/to/extension/hooks/ccc-hook.js\"", "timeout": 10 }] }],
+    "PreToolUse": [{ "matcher": "*", "hooks": [{ "type": "command", "command": "node \"C:/path/to/extension/hooks/ccc-hook.js\"", "timeout": 10 }] }],
+    "PostToolUse": [{ "matcher": "*", "hooks": [{ "type": "command", "command": "node \"C:/path/to/extension/hooks/ccc-hook.js\"", "timeout": 10 }] }],
+    "SubagentStart": [{ "hooks": [{ "type": "command", "command": "node \"C:/path/to/extension/hooks/ccc-hook.js\"", "timeout": 10 }] }],
+    "SubagentStop": [{ "hooks": [{ "type": "command", "command": "node \"C:/path/to/extension/hooks/ccc-hook.js\"", "timeout": 10 }] }],
+    "Stop": [{ "hooks": [{ "type": "command", "command": "node \"C:/path/to/extension/hooks/ccc-hook.js\"", "timeout": 10 }] }],
+    "Notification": [{ "hooks": [{ "type": "command", "command": "node \"C:/path/to/extension/hooks/ccc-hook.js\"", "timeout": 10 }] }]
+  }
+}

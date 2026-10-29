@@ -1,0 +1,15 @@
+.ckp { padding: 8px; font-size: 12px; }
+.ckp button { font: inherit; font-size: 12px; color: var(--vscode-button-secondaryForeground); background: var(--vscode-button-secondaryBackground); border: 0; padding: 3px 8px; cursor: pointer; border-radius: 2px; }
+.ckp button.pri { color: var(--vscode-button-foreground); background: var(--vscode-button-background); }
+.ckp button:disabled { opacity: .5; cursor: default; }
+.ckp .row { display: flex; gap: 4px; flex-wrap: wrap; margin: 4px 0; }
+.ckp .item { border: 1px solid var(--vscode-widget-border, rgba(128,128,128,.25)); border-radius: 3px; margin: 6px 0; padding: 6px; }
+.ckp .name { font-weight: 600; word-break: break-word; }
+.ckp .meta { opacity: .75; margin-top: 2px; }
+.ckp .badge { display: inline-block; padding: 0 5px; border-radius: 8px; font-size: 10px; background: var(--vscode-badge-background); color: var(--vscode-badge-foreground); margin-right: 4px; }
+.ckp .file { display: flex; align-items: center; gap: 4px; margin: 2px 0; }
+.ckp .file .p { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ckp .k-added { color: var(--vscode-gitDecoration-addedResourceForeground, #81b88b); }
+.ckp .k-modified { color: var(--vscode-gitDecoration-modifiedResourceForeground, #e2c08d); }
+.ckp .k-deleted { color: var(--vscode-gitDecoration-deletedResourceForeground, #c74e39); }
+.ckp .empty { opacity: .7; padding: 12px 0; }

@@ -1,0 +1,11 @@
+{
+  "name": "ccc-local",
+  "owner": { "name": "pfxtoolkit" },
+  "plugins": [
+    {
+      "name": "control-center",
+      "source": "./mod",
+      "description": "Changed-files band above the prompt, usage widget, and the sub-account-worker agent."
+    }
+  ]
+}

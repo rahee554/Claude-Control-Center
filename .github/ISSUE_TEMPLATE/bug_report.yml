@@ -1,0 +1,31 @@
+name: Bug report
+description: Something does not work as documented
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: Expected vs actual. Do not paste prompts, tokens or secrets.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+    validations:
+      required: true
+  - type: input
+    id: versions
+    attributes:
+      label: Versions
+      description: Extension, VS Code, Claude Code CLI, OS
+      placeholder: 0.1.0 / 1.95 / 2.1.x / Windows 11
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: Output panel, "Claude Control Center" (redact private data)
+      render: text

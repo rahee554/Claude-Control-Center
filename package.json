@@ -1,0 +1,898 @@
+{
+  "name": "claude-code-control-center",
+  "displayName": "Claude Code Control Center",
+  "description": "Monitor Claude Code agents, subagents and their terminals from one sidebar.",
+  "version": "0.1.0",
+  "publisher": "pfxtoolkit",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rahee554/Claude-Control-Center.git"
+  },
+  "engines": {
+    "vscode": "^1.95.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "main": "./dist/extension.js",
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "contributes": {
+    "icons": {
+      "ccc-claude": {
+        "description": "Claude Code (status bar)",
+        "default": {
+          "fontPath": "media/claude-icons.woff",
+          "fontCharacter": "\\E000"
+        }
+      }
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "claudeControlCenter",
+          "title": "Claude Control Center",
+          "icon": "media/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "claudeControlCenter": [
+        {
+          "type": "webview",
+          "id": "ccc.dashboard",
+          "name": "Control Center"
+        },
+        {
+          "id": "ccc.terminals",
+          "name": "Terminals",
+          "when": "ccc.showTerminals"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "ccc.checkpoint.create",
+        "title": "Create Checkpoint",
+        "category": "Claude Control Center"
+      },
+      {
+        "command": "ccc.checkpoint.restore",
+        "title": "Restore Checkpoint",
+        "category": "Claude Control Center"
+      },
+      {
+        "command": "ccc.exportSession",
+        "title": "Export Session as Markdown",
+        "category": "Claude Control Center"
+      },
+      {
+        "command": "ccc.refresh",
+        "title": "Refresh",
+        "category": "Claude Control Center",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "ccc.pauseMonitoring",
+        "title": "Pause Monitoring",
+        "category": "Claude Control Center",
+        "icon": "$(debug-pause)"
+      },
+      {
+        "command": "ccc.resumeMonitoring",
+        "title": "Resume Monitoring",
+        "category": "Claude Control Center",
+        "icon": "$(debug-start)"
+      },
+      {
+        "command": "ccc.installHooks",
+        "title": "Install Claude Code Hooks",
+        "category": "Claude Control Center",
+        "icon": "$(plug)"
+      },
+      {
+        "command": "ccc.focusTerminal",
+        "title": "Focus Terminal",
+        "category": "Claude Control Center",
+        "icon": "$(terminal)"
+      },
+      {
+        "command": "ccc.openTerminalInEditor",
+        "title": "Open Terminal in Editor",
+        "category": "Claude Control Center",
+        "icon": "$(go-to-file)"
+      },
+      {
+        "command": "ccc.splitTerminal",
+        "title": "Split Terminal",
+        "category": "Claude Control Center",
+        "icon": "$(split-horizontal)"
+      },
+      {
+        "command": "ccc.newTerminal",
+        "title": "New Terminal",
+        "category": "Claude Control Center",
+        "icon": "$(add)"
+      },
+      {
+        "command": "ccc.renameTerminal",
+        "title": "Rename Terminal",
+        "category": "Claude Control Center",
+        "icon": "$(edit)"
+      },
+      {
+        "command": "ccc.terminateTerminal",
+        "title": "Terminate Terminal",
+        "category": "Claude Control Center",
+        "icon": "$(trash)"
+      },
+      {
+        "command": "ccc.terminateClaudeGroup",
+        "title": "Terminate Session Terminals",
+        "category": "Claude Control Center",
+        "icon": "$(close-all)"
+      },
+      {
+        "command": "ccc.copyId",
+        "title": "Copy ID",
+        "category": "Claude Control Center",
+        "icon": "$(copy)"
+      },
+      {
+        "command": "ccc.openTranscript",
+        "title": "Open Transcript",
+        "category": "Claude Control Center",
+        "icon": "$(file-text)"
+      },
+      {
+        "command": "ccc.showEventHistory",
+        "title": "Show Event History",
+        "category": "Claude Control Center",
+        "icon": "$(history)"
+      },
+      {
+        "command": "ccc.filter",
+        "title": "Filter Agents",
+        "category": "Claude Control Center",
+        "icon": "$(filter)"
+      },
+      {
+        "command": "ccc.installStatusLine",
+        "title": "Install Status Line Capture (rate limits)",
+        "category": "Claude Control Center",
+        "icon": "$(pulse)"
+      },
+      {
+        "command": "ccc.uninstallStatusLine",
+        "title": "Uninstall Status Line Capture",
+        "category": "Claude Control Center"
+      },
+      {
+        "command": "ccc.mirror.replaySession",
+        "title": "Replay Session Commands in Mirror Terminal",
+        "category": "Claude Control Center",
+        "icon": "$(history)"
+      },
+      {
+        "command": "ccc.refreshLimits",
+        "title": "Refresh Account Limits",
+        "category": "Claude Control Center",
+        "icon": "$(pulse)"
+      },
+      {
+        "command": "ccc.delegateTask",
+        "title": "Delegate to Claude account…",
+        "category": "Claude Control Center",
+        "icon": "$(rocket)"
+      },
+      {
+        "command": "ccc.accounts.add",
+        "title": "Add Sub-Account",
+        "category": "Claude Control Center",
+        "icon": "$(add)"
+      },
+      {
+        "command": "ccc.accounts.login",
+        "title": "Log In Account",
+        "category": "Claude Control Center",
+        "icon": "$(sign-in)"
+      },
+      {
+        "command": "ccc.accounts.rename",
+        "title": "Rename Account",
+        "category": "Claude Control Center"
+      },
+      {
+        "command": "ccc.accounts.remove",
+        "title": "Remove Account",
+        "category": "Claude Control Center"
+      },
+      {
+        "command": "ccc.accounts.toggle",
+        "title": "Enable/Disable Account",
+        "category": "Claude Control Center",
+        "icon": "$(circle-large-outline)"
+      },
+      {
+        "command": "ccc.accounts.setMain",
+        "title": "Set as Main Account",
+        "category": "Claude Control Center"
+      },
+      {
+        "command": "ccc.accounts.refresh",
+        "title": "Refresh Accounts",
+        "category": "Claude Control Center",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "ccc.task.focus",
+        "title": "Focus Task Terminal",
+        "category": "Claude Control Center",
+        "icon": "$(terminal)"
+      },
+      {
+        "command": "ccc.task.openResult",
+        "title": "Open Task Result",
+        "category": "Claude Control Center",
+        "icon": "$(output)"
+      },
+      {
+        "command": "ccc.task.cancel",
+        "title": "Cancel Task",
+        "category": "Claude Control Center",
+        "icon": "$(debug-stop)"
+      },
+      {
+        "command": "ccc.task.rerun",
+        "title": "Re-run Task",
+        "category": "Claude Control Center",
+        "icon": "$(debug-restart)"
+      },
+      {
+        "command": "ccc.accounts.logout",
+        "title": "Log Out Account",
+        "category": "Claude Control Center",
+        "icon": "$(sign-out)"
+      },
+      {
+        "command": "ccc.accounts.edit",
+        "title": "Edit Account…",
+        "category": "Claude Control Center",
+        "icon": "$(edit)"
+      },
+      {
+        "command": "ccc.accounts.switchDefault",
+        "title": "Switch Default Delegation Account",
+        "category": "Claude Control Center",
+        "icon": "$(account)"
+      },
+      {
+        "command": "ccc.accounts.openClaude",
+        "title": "Open Claude as Account",
+        "category": "Claude Control Center",
+        "icon": "$(terminal)"
+      },
+      {
+        "command": "ccc.installMcp",
+        "title": "Install Delegation MCP Server (ccc-accounts)",
+        "category": "Claude Control Center",
+        "icon": "$(plug)"
+      },
+      {
+        "command": "ccc.uninstallMcp",
+        "title": "Uninstall Delegation MCP Server",
+        "category": "Claude Control Center"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "ccc.delegateTask",
+          "when": "config.ccc.accounts.enabled",
+          "group": "z_claude"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "ccc.delegateTask",
+          "when": "view == ccc.accounts",
+          "group": "navigation@1"
+        },
+        {
+          "command": "ccc.accounts.add",
+          "when": "view == ccc.accounts",
+          "group": "navigation@2"
+        },
+        {
+          "command": "ccc.accounts.refresh",
+          "when": "view == ccc.accounts",
+          "group": "navigation@9"
+        },
+        {
+          "command": "ccc.filter",
+          "when": "view == ccc.agents",
+          "group": "navigation@1"
+        },
+        {
+          "command": "ccc.pauseMonitoring",
+          "when": "view == ccc.agents && !ccc.paused",
+          "group": "navigation@2"
+        },
+        {
+          "command": "ccc.resumeMonitoring",
+          "when": "view == ccc.agents && ccc.paused",
+          "group": "navigation@2"
+        },
+        {
+          "command": "ccc.showEventHistory",
+          "when": "view == ccc.agents",
+          "group": "navigation@3"
+        },
+        {
+          "command": "ccc.refresh",
+          "when": "view == ccc.agents || view == ccc.terminals",
+          "group": "navigation@9"
+        },
+        {
+          "command": "ccc.installHooks",
+          "when": "view == ccc.agents",
+          "group": "overflow"
+        },
+        {
+          "command": "ccc.newTerminal",
+          "when": "view == ccc.terminals",
+          "group": "navigation@1"
+        },
+        {
+          "command": "ccc.installStatusLine",
+          "when": "view == ccc.agents || view == ccc.dashboard",
+          "group": "overflow"
+        },
+        {
+          "command": "ccc.refresh",
+          "when": "view == ccc.dashboard",
+          "group": "navigation@9"
+        },
+        {
+          "command": "ccc.accounts.switchDefault",
+          "when": "view == ccc.accounts",
+          "group": "navigation@3"
+        },
+        {
+          "command": "ccc.installMcp",
+          "when": "view == ccc.accounts",
+          "group": "overflow"
+        },
+        {
+          "command": "ccc.uninstallMcp",
+          "when": "view == ccc.accounts",
+          "group": "overflow"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "ccc.delegateTask",
+          "when": "view == ccc.accounts && viewItem =~ /^account\\..*\\.enabled\\.in$/",
+          "group": "inline@1"
+        },
+        {
+          "command": "ccc.accounts.login",
+          "when": "view == ccc.accounts && viewItem =~ /^account\\..*\\.out$/",
+          "group": "inline@2"
+        },
+        {
+          "command": "ccc.accounts.toggle",
+          "when": "view == ccc.accounts && viewItem =~ /^account\\./",
+          "group": "inline@3"
+        },
+        {
+          "command": "ccc.accounts.refresh",
+          "when": "view == ccc.accounts && viewItem =~ /^account\\./",
+          "group": "inline@4"
+        },
+        {
+          "command": "ccc.accounts.login",
+          "when": "view == ccc.accounts && viewItem =~ /^account\\./",
+          "group": "1_account"
+        },
+        {
+          "command": "ccc.accounts.rename",
+          "when": "view == ccc.accounts && viewItem =~ /^account\\./",
+          "group": "1_account"
+        },
+        {
+          "command": "ccc.accounts.setMain",
+          "when": "view == ccc.accounts && viewItem =~ /^account\\.sub/",
+          "group": "1_account"
+        },
+        {
+          "command": "ccc.accounts.remove",
+          "when": "view == ccc.accounts && viewItem =~ /^account\\./",
+          "group": "9_danger"
+        },
+        {
+          "command": "ccc.task.focus",
+          "when": "view == ccc.accounts && viewItem =~ /^task\\./",
+          "group": "inline@1"
+        },
+        {
+          "command": "ccc.task.openResult",
+          "when": "view == ccc.accounts && viewItem =~ /^task\\./",
+          "group": "inline@2"
+        },
+        {
+          "command": "ccc.task.cancel",
+          "when": "view == ccc.accounts && viewItem == task.running",
+          "group": "inline@3"
+        },
+        {
+          "command": "ccc.task.rerun",
+          "when": "view == ccc.accounts && viewItem =~ /^task\\.(done|failed|cancelled)$/",
+          "group": "inline@4"
+        },
+        {
+          "command": "ccc.showEventHistory",
+          "when": "view == ccc.agents && viewItem =~ /^(session|subagent)$/",
+          "group": "inline@1"
+        },
+        {
+          "command": "ccc.openTranscript",
+          "when": "view == ccc.agents && viewItem =~ /^(session|recentAgent)$/",
+          "group": "1_open"
+        },
+        {
+          "command": "ccc.copyId",
+          "when": "view == ccc.agents && viewItem =~ /^(session|subagent|recentAgent)$/",
+          "group": "9_copy"
+        },
+        {
+          "command": "ccc.newTerminal",
+          "when": "view == ccc.agents && viewItem == session",
+          "group": "2_terminal"
+        },
+        {
+          "command": "ccc.terminateClaudeGroup",
+          "when": "view == ccc.agents && viewItem == session",
+          "group": "8_danger"
+        },
+        {
+          "command": "ccc.focusTerminal",
+          "when": "view == ccc.terminals && viewItem =~ /^terminal\\./",
+          "group": "inline@1"
+        },
+        {
+          "command": "ccc.terminateTerminal",
+          "when": "view == ccc.terminals && viewItem =~ /^terminal\\./",
+          "group": "inline@9"
+        },
+        {
+          "command": "ccc.openTerminalInEditor",
+          "when": "view == ccc.terminals && viewItem =~ /^terminal\\./",
+          "group": "1_open"
+        },
+        {
+          "command": "ccc.splitTerminal",
+          "when": "view == ccc.terminals && viewItem =~ /^terminal\\./",
+          "group": "1_open"
+        },
+        {
+          "command": "ccc.renameTerminal",
+          "when": "view == ccc.terminals && viewItem =~ /^terminal\\./",
+          "group": "2_edit"
+        },
+        {
+          "command": "ccc.copyId",
+          "when": "view == ccc.terminals && viewItem =~ /^terminal\\./",
+          "group": "9_copy"
+        },
+        {
+          "command": "ccc.terminateClaudeGroup",
+          "when": "view == ccc.terminals && viewItem =~ /^terminal\\.(extensionOwned|claudeConfirmed)\\.session$/",
+          "group": "8_danger"
+        },
+        {
+          "command": "ccc.focusTerminal",
+          "when": "view == ccc.agents && viewItem == session",
+          "group": "2_terminal"
+        },
+        {
+          "command": "ccc.mirror.replaySession",
+          "when": "view == ccc.agents && viewItem == session",
+          "group": "2_terminal"
+        },
+        {
+          "command": "ccc.accounts.openClaude",
+          "when": "view == ccc.accounts && viewItem =~ /^account..*.in$/",
+          "group": "inline@0"
+        },
+        {
+          "command": "ccc.accounts.edit",
+          "when": "view == ccc.accounts && viewItem =~ /^account./",
+          "group": "1_account"
+        },
+        {
+          "command": "ccc.accounts.openClaude",
+          "when": "view == ccc.accounts && viewItem =~ /^account./",
+          "group": "1_account"
+        },
+        {
+          "command": "ccc.accounts.logout",
+          "when": "view == ccc.accounts && viewItem =~ /^account..*.in$/",
+          "group": "1_account"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "ccc.focusTerminal",
+          "when": "false"
+        },
+        {
+          "command": "ccc.openTerminalInEditor",
+          "when": "false"
+        },
+        {
+          "command": "ccc.splitTerminal",
+          "when": "false"
+        },
+        {
+          "command": "ccc.renameTerminal",
+          "when": "false"
+        },
+        {
+          "command": "ccc.terminateTerminal",
+          "when": "false"
+        },
+        {
+          "command": "ccc.terminateClaudeGroup",
+          "when": "false"
+        },
+        {
+          "command": "ccc.copyId",
+          "when": "false"
+        },
+        {
+          "command": "ccc.openTranscript",
+          "when": "false"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Claude Control Center",
+      "properties": {
+        "ccc.refreshIntervalSeconds": {
+          "type": "number",
+          "default": 5,
+          "minimum": 1,
+          "maximum": 300,
+          "description": "Fallback poll interval (seconds) used in addition to file watching."
+        },
+        "ccc.staleAfterSeconds": {
+          "type": "number",
+          "default": 120,
+          "minimum": 10,
+          "description": "Agents with no events for this long are marked stale and never shown as live."
+        },
+        "ccc.historyLimit": {
+          "type": "number",
+          "default": 500,
+          "minimum": 50,
+          "maximum": 10000,
+          "description": "Maximum number of events kept in memory."
+        },
+        "ccc.recentAgentsLimit": {
+          "type": "number",
+          "default": 20,
+          "minimum": 0,
+          "maximum": 200,
+          "description": "Number of recently completed/failed agents to show."
+        },
+        "ccc.terminate.requireConfirmation": {
+          "type": "boolean",
+          "default": true,
+          "description": "Ask for modal confirmation before closing terminals."
+        },
+        "ccc.collectPromptText": {
+          "type": "boolean",
+          "default": false,
+          "description": "Let the hook script record truncated prompt text. Takes effect when hooks are (re)installed."
+        },
+        "ccc.processCorrelation.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Look up parent processes to confirm which terminals run Claude Code."
+        },
+        "ccc.mirror.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Mirror Claude Code Bash/PowerShell tool calls into a read-only VS Code terminal per session."
+        },
+        "ccc.mirror.showOutput": {
+          "type": "boolean",
+          "default": true,
+          "description": "Let the hook record command output (stdout/stderr) so the mirror can show it. When off, the hook omits output from ~/.claude-control-center/events."
+        },
+        "ccc.mirror.maxOutputKB": {
+          "type": "number",
+          "default": 64,
+          "minimum": 1,
+          "maximum": 128,
+          "description": "Maximum command output (KB) the hook records per call."
+        },
+        "ccc.mirror.focus": {
+          "type": "string",
+          "enum": [
+            "never",
+            "onCreate"
+          ],
+          "default": "never",
+          "description": "Reveal the mirror terminal (without taking keyboard focus) when it is created."
+        },
+        "ccc.views.terminals": {
+          "type": "boolean",
+          "default": false,
+          "description": "Show the Terminals tree in the sidebar. Claude command mirrors always live in the VS Code terminal panel."
+        },
+        "ccc.chatBox.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show Claude's file changes inside the Claude Code chat box (written to ~/.claude-control-center/config.json as chatBox for the mod)."
+        },
+        "ccc.timeline.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show the Messages timeline in the Activity view."
+        },
+        "ccc.models.chart": {
+          "type": "string",
+          "enum": [
+            "bar",
+            "donut"
+          ],
+          "default": "bar",
+          "description": "Chart style for the Models section: one stacked bar or a donut."
+        },
+        "ccc.models.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show the Models section (tokens and agents per model) in the Activity view."
+        },
+        "ccc.alerts.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Notify when Claude needs you (permission, waiting for input) or a delegated task finishes."
+        },
+        "ccc.alerts.permission": {
+          "type": "boolean",
+          "default": true,
+          "description": "Alert on permission prompts."
+        },
+        "ccc.alerts.input": {
+          "type": "boolean",
+          "default": true,
+          "description": "Alert when Claude is waiting for your input."
+        },
+        "ccc.alerts.tasks": {
+          "type": "boolean",
+          "default": true,
+          "description": "Alert when a delegated task finishes or fails."
+        },
+        "ccc.alerts.whenFocused": {
+          "type": "boolean",
+          "default": false,
+          "description": "Also show alerts while the VS Code window is focused."
+        },
+        "ccc.statusBar.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show the Claude Code item (limits, running agents) in the status bar."
+        },
+        "ccc.checkpoints.autoOnPrompt": {
+          "type": "boolean",
+          "default": false,
+          "description": "Create a checkpoint on each prompt (debounced 30s)."
+        },
+        "ccc.checkpoints.keep": {
+          "type": "number",
+          "default": 50,
+          "minimum": 1,
+          "maximum": 1000,
+          "description": "Checkpoints to keep; oldest automatic ones are pruned."
+        },
+        "ccc.checkpoints.maxFileKB": {
+          "type": "number",
+          "default": 2048,
+          "minimum": 1,
+          "maximum": 102400,
+          "description": "Files larger than this are skipped."
+        },
+        "ccc.checkpoints.maxTotalMB": {
+          "type": "number",
+          "default": 200,
+          "minimum": 1,
+          "maximum": 10000,
+          "description": "A checkpoint is refused above this workspace size."
+        },
+        "ccc.checkpoints.exclude": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "node_modules",
+            ".git",
+            "dist",
+            "out",
+            ".vscode-test",
+            "*.vsix",
+            "*.zip",
+            "*.exe",
+            "*.dll",
+            "*.png",
+            "*.jpg",
+            "*.jpeg",
+            "*.gif",
+            "*.mp4",
+            "*.mov",
+            "*.pdf",
+            "*.7z",
+            "*.tar",
+            "*.gz"
+          ],
+          "description": "Globs excluded from checkpoints (top-level .gitignore is also honored)."
+        },
+        "ccc.timeline.showText": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show prompt and reply text in the Activity timeline (read locally from the transcript, never logged or sent). Off shows tools and metadata only."
+        },
+        "ccc.changes.lookbackHours": {
+          "type": "number",
+          "default": 24,
+          "minimum": 1,
+          "maximum": 720,
+          "description": "Claude Changes shows sessions (including ended ones) with activity in the last N hours."
+        },
+        "ccc.limits.pollMinutes": {
+          "type": "number",
+          "default": 5,
+          "minimum": 0,
+          "maximum": 120,
+          "description": "How often to read 5h/weekly limits by running `claude -p /usage` (subscription plans). 0 disables."
+        },
+        "ccc.accounts.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable multiple Claude accounts (CLAUDE_CONFIG_DIR per account) and task delegation."
+        },
+        "ccc.accounts.pollMinutes": {
+          "type": "number",
+          "default": 10,
+          "minimum": 0,
+          "maximum": 240,
+          "description": "How often to check login + 5h/weekly usage of each account (`claude -p /usage`, staggered). 0 disables."
+        },
+        "ccc.delegate.defaultPreset": {
+          "type": "string",
+          "enum": [
+            "readonly",
+            "edit",
+            "bash"
+          ],
+          "default": "readonly",
+          "description": "Default permission preset for delegated tasks."
+        },
+        "ccc.delegate.defaultModel": {
+          "type": "string",
+          "enum": [
+            "default",
+            "haiku",
+            "sonnet",
+            "opus"
+          ],
+          "default": "default",
+          "description": "Default model for delegated tasks."
+        },
+        "ccc.delegate.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Allow delegating tasks to sub-accounts (UI buttons and the MCP delegate_task tool)."
+        },
+        "ccc.delegate.routing.heavy": {
+          "type": "string",
+          "default": "auto",
+          "description": "Account for heavy delegated work: an account id, \"auto\" (lowest 5h usage) or \"main\"."
+        },
+        "ccc.delegate.routing.light": {
+          "type": "string",
+          "default": "auto",
+          "description": "Account for light delegated work: an account id, \"auto\" or \"main\"."
+        },
+        "ccc.delegate.routing.heavyModel": {
+          "type": "string",
+          "enum": [
+            "default",
+            "haiku",
+            "sonnet",
+            "opus"
+          ],
+          "default": "opus",
+          "description": "Default model for heavy delegated work (MCP delegate_task weight=heavy)."
+        },
+        "ccc.delegate.routing.lightModel": {
+          "type": "string",
+          "enum": [
+            "default",
+            "haiku",
+            "sonnet",
+            "opus"
+          ],
+          "default": "haiku",
+          "description": "Default model for light delegated work (MCP delegate_task weight=light)."
+        },
+        "ccc.delegate.maxConcurrent": {
+          "type": "number",
+          "default": 2,
+          "minimum": 1,
+          "maximum": 10,
+          "description": "Maximum delegated tasks running at once."
+        },
+        "ccc.limits.claudePath": {
+          "type": "string",
+          "default": "claude",
+          "description": "Claude Code CLI used for `/usage`. Plain path only; shell metacharacters are rejected."
+        },
+        "ccc.delegate.allowRunFromMcp": {
+          "type": "boolean",
+          "default": false,
+          "description": "Allow the MCP tool delegate_task to use preset 'run' (Bash). Off by default."
+        },
+        "ccc.delegate.allowMainFromMcp": {
+          "type": "boolean",
+          "default": false,
+          "description": "Allow the MCP tool delegate_task to target the main account. Off by default (sub-accounts only)."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "compile": "tsc -p . --noEmit && node esbuild.mjs",
+    "lint": "eslint src test",
+    "build-tests": "tsc -p . --outDir out",
+    "test:unit": "npm run build-tests && mocha \"out/test/unit/**/*.test.js\"",
+    "test": "npm run compile && npm run build-tests && node out/test/e2e/runTest.js",
+    "package": "vsce package --no-dependencies"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^22.0.0",
+    "@types/vscode": "~1.95.0",
+    "@vscode/test-electron": "^2.4.1",
+    "@vscode/vsce": "^3.2.1",
+    "esbuild": "^0.24.0",
+    "eslint": "^9.17.0",
+    "mocha": "^11.0.1",
+    "typescript": "^5.7.2",
+    "typescript-eslint": "^8.18.0"
+  },
+  "bugs": {
+    "url": "https://github.com/rahee554/Claude-Control-Center/issues"
+  },
+  "homepage": "https://github.com/rahee554/Claude-Control-Center#readme",
+  "keywords": [
+    "claude",
+    "claude-code",
+    "anthropic",
+    "agents",
+    "subagents",
+    "dashboard",
+    "usage",
+    "checkpoints",
+    "mcp"
+  ],
+  "galleryBanner": {
+    "color": "#1e1e1e",
+    "theme": "dark"
+  }
+}
