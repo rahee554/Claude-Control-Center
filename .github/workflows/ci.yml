@@ -12,15 +12,15 @@ jobs:
         os: [windows-latest, ubuntu-latest]
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: npm
       - run: npm ci
       - run: npm run compile
       - run: npm run lint
-      - run: npm run test:unit
+      - run: npm run test:unit -- --reporter spec
       # Optional e2e smoke test (downloads VS Code); Linux needs a virtual display.
       - run: xvfb-run -a npm test
         if: runner.os == 'Linux'
